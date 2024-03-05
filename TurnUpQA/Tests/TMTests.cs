@@ -6,26 +6,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TurnUpQA.Pages;
+using NUnit.Framework;
+using TurnUpQA.Utilities;
 
 namespace TurnUpQA.Tests
 {
-    public class TMTests
+    [Parallelizable]
+    [TestFixture]
+    public class TMTests : CommonDriver
     {
-        public void SetUpTM()
-        {
 
+        [SetUp]
+        public void SetUpTimeAndMaterial()
+        {
+            //Open Chrome/Firefox browser
+            driver = new ChromeDriver();
+
+            LoginPage loginPageObj = new LoginPage();
+            loginPageObj.LoginActions(driver, "hari", "123123");
+            HomePage homePageObj = new HomePage();
+            homePageObj.VerifyLoggedInUser(driver);
+            homePageObj.NavigateToTMPage(driver);
         }
 
-        public void CreateTM()
+        [Test, Order(1), Description("This test create a new Time/Material record with valid details")]
+        public void TestCreateTimeMaterialRecord()
         {
-
+            TimeMaterialPage timeMaterialPageObj = new TimeMaterialPage();
+            timeMaterialPageObj.CreateTimeMaterialRecord(driver);
         }
 
-        public void DeleteTM() { }
+        [Test, Order(2), Description("This test edit the Time/Material record with valid data")]
+        public void TestEditTimeMaterialRecord()
+        {
+            TimeMaterialPage timeMaterialPageObj = new TimeMaterialPage();
+            timeMaterialPageObj.EditTimeMaterialRecord(driver);
+        }
 
-        public void EditTM() { }
+        [Test, Order(3), Description("This test delete the last Time/Material record")]
+        public void TestDeleteTimeMaterialRecord()
+        {
+            HomePage homePageObj = new HomePage();
+            homePageObj.NavigateToTMPage(driver);
+            TimeMaterialPage timeMaterialPageObj = new TimeMaterialPage();
+            timeMaterialPageObj.DeleteTimeMaterialRecord(driver);
+        }
 
-        
-        
+        [TearDown]
+        public void CloseTestRun()
+        {
+            driver.Quit();
+        }
+
     }
 }
